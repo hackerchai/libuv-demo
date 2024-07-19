@@ -1,0 +1,5 @@
+*.o
+*.exe
+*~
+echo_server
+file_async_read
