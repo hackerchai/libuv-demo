@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <uv.h>
-#include <limits.h> // 为 INT_MAX 提供定义
+#include <limits.h>
 
 #define BUFFER_SIZE 1024
 
@@ -51,7 +51,6 @@ void on_read(uv_fs_t *req) {
         if (req->result > INT_MAX) {
             fprintf(stderr, "Read size too large for printf\n");
         } else {
-            // 使用 int 安全地输出读取的数据
             printf("%.*s", (int)req->result, buffer);
         }
         uv_fs_read(loop, &read_req, open_req.result, &iov, 1, -1, on_read);
