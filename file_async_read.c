@@ -28,23 +28,21 @@ int main() {
     uv_fs_req_cleanup(&read_req);
     uv_fs_req_cleanup(&close_req);
     uv_loop_close(loop);
-    free(loop);
     return 0;
 }
 
 void on_open(uv_fs_t *req) {
     if (req->result < 0) {
-        fprintf(stderr, "Error opening file: %s\n", uv_strerror(req->result));
+        fprintf(stderr, "Error opening file: %s\n", uv_strerror((int)req->result));
     } else {
         iov = uv_buf_init(buffer, sizeof(buffer));
-        uv_fs_read(loop, &read_req, req->result, &iov, 1, 0, on_read);
+        uv_fs_read(loop, &read_req, req->result, &iov, 1, -1, on_read);
     }
-    uv_fs_req_cleanup(req);
 }
 
 void on_read(uv_fs_t *req) {
     if (req->result < 0) {
-        fprintf(stderr, "Read error: %s\n", uv_strerror(req->result));
+        fprintf(stderr, "Read error: %s\n", uv_strerror((int)req->result));
     } else if (req->result == 0) {
         uv_fs_close(loop, &close_req, open_req.result, on_close);
     } else {
@@ -55,10 +53,12 @@ void on_read(uv_fs_t *req) {
         }
         uv_fs_read(loop, &read_req, open_req.result, &iov, 1, -1, on_read);
     }
-    uv_fs_req_cleanup(req);
 }
 
 void on_close(uv_fs_t *req) {
-    printf("\nFile closed.\n");
-    uv_fs_req_cleanup(req);
+    if (req->result < 0) {
+        fprintf(stderr, "Error closing file: %s\n", uv_strerror((int)req->result));
+    } else {
+        printf("\nFile closed successfully.\n");
+    }
 }

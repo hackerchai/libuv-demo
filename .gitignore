@@ -3,3 +3,6 @@
 *~
 echo_server
 file_async_read
+
+.vscode/
+.idea/
